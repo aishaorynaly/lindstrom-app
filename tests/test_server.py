@@ -1,4 +1,5 @@
 """The portal server: static allow-list, health, and the Gemini proxy with caller-run tools."""
+import base64
 import json
 import sys
 import threading
@@ -10,6 +11,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
+import server
 from server import make_server
 
 TOOLS = [{"function_declarations": [{
@@ -156,3 +158,56 @@ def test_a_spoofed_host_header_is_refused(portal, fake_gemini, host):
             urllib.request.urlopen(req, timeout=10)
         assert refused.value.code == 403, (method, path)
     assert fake_gemini.requests == []
+
+
+# --- Password ---------------------------------------------------------------------------------------------------
+def signed_in(url, password):
+    token = base64.b64encode(f"kam:{password}".encode()).decode()
+    req = urllib.request.Request(url, headers={"Authorization": f"Basic {token}"})
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            return response.status
+    except urllib.error.HTTPError as exc:
+        return exc.code
+
+
+@pytest.fixture
+def locked(portal, monkeypatch):
+    monkeypatch.setenv("APP_PASSWORD", "correct horse")
+    monkeypatch.setattr(server, "FAILED_SIGN_IN_DELAY", 0)
+    return portal
+
+
+def test_without_a_password_set_nothing_changes(portal, monkeypatch):
+    monkeypatch.delenv("APP_PASSWORD", raising=False)
+    assert request(portal + "/")[0] == 200
+
+
+def test_the_page_and_the_api_need_the_password(locked):
+    status, _, headers = request(locked + "/")
+    assert status == 401 and "Basic" in headers["WWW-Authenticate"]
+    assert request(locked + "/api/gemini", body={"system": "s", "contents": CONTENTS})[0] == 401
+    assert request(locked + "/api/ask", body={"question": "x"})[0] == 401
+
+
+def test_the_right_password_opens_it_and_a_wrong_one_does_not(locked):
+    assert signed_in(locked + "/", "correct horse") == 200
+    assert signed_in(locked + "/", "wrong") == 401
+
+
+def test_a_broken_sign_in_header_is_refused(locked):
+    req = urllib.request.Request(locked + "/", headers={"Authorization": "Basic not*base64"})
+    with pytest.raises(urllib.error.HTTPError) as caught:
+        urllib.request.urlopen(req, timeout=20)
+    assert caught.value.code == 401
+
+
+def test_health_stays_open_for_the_host(locked):
+    assert request(locked + "/api/health")[0] == 200
+
+
+def test_a_public_host_needs_a_password(monkeypatch):
+    monkeypatch.delenv("APP_PASSWORD", raising=False)
+    monkeypatch.setattr(sys, "argv", ["server.py", "--host", "0.0.0.0", "--port", "0"])
+    with pytest.raises(SystemExit, match="APP_PASSWORD"):
+        server.main()

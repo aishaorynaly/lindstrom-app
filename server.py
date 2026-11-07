@@ -5,14 +5,22 @@
 
 The portal itself is the static folder `portal/`. It runs without this server too (open index.html), in
 offline-rules mode; the server adds the Gemini assistant.
+
+Set APP_PASSWORD to ask for a password. It is required on a public host, because every question spends the
+GEMINI_API_KEY quota:
+
+    python server.py --host 0.0.0.0 --port 8000
 """
 from __future__ import annotations
 
 import argparse
+import base64
+import hmac
 import json
 import os
 import re
 import threading
+import time
 from urllib.parse import urlsplit
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -25,6 +33,8 @@ STATIC = {"index.html": "text/html; charset=utf-8", "kam.css": "text/css; charse
           "extra_data.js": "text/javascript; charset=utf-8", "review.html": "text/html; charset=utf-8",
           "review.css": "text/css; charset=utf-8", "review_ai.js": "text/javascript; charset=utf-8"}
 MAX_BODY = 1_000_000
+MAX_READ = 8 * MAX_BODY  # what is read of a refused request before the connection is closed
+FAILED_SIGN_IN_DELAY = 0.5
 NAME = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,63}$")
 _data: dict = {}
 _data_lock = threading.Lock()
@@ -137,12 +147,33 @@ class Handler(BaseHTTPRequestHandler):
         host = urlsplit("//" + (self.headers.get("Host") or "")).hostname
         return host in ("127.0.0.1", "localhost", "::1")
 
+    def _authorized(self) -> bool:
+        """The browser's built-in sign-in. Any user name works; only APP_PASSWORD is checked."""
+        password = os.environ.get("APP_PASSWORD")
+        if not password:
+            return True
+        scheme, _, value = (self.headers.get("Authorization") or "").partition(" ")
+        try:
+            given = base64.b64decode(value, validate=True).decode().partition(":")[2]
+        except ValueError:
+            given = ""
+        return scheme.lower() == "basic" and hmac.compare_digest(given.encode(), password.encode())
+
+    def _deny(self) -> None:
+        time.sleep(FAILED_SIGN_IN_DELAY)
+        self.send_response(401)
+        self.send_header("WWW-Authenticate", 'Basic realm="Lindstrom KAM review", charset="UTF-8"')
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
     def do_GET(self) -> None:
         if not self._host_allowed():
             return self._json(403, {"error": "Unexpected Host header."})
         path = self.path.split("?", 1)[0]
-        if path == "/api/health":
+        if path == "/api/health":  # open, so a host can check the service; it shows no customer data
             return self._json(200, {"ai": bool(llm.api_key()), "model": llm.MODEL})
+        if not self._authorized():
+            return self._deny()
         if path == "/favicon.ico":  # browsers ask for it unprompted; there is none
             return self._send(204, b"", "image/x-icon")
         name = "review.html" if path in ("/", "") else path.lstrip("/")
@@ -151,27 +182,34 @@ class Handler(BaseHTTPRequestHandler):
         self._json(404, {"error": "Not found"})
 
     def do_POST(self) -> None:
+        # Read first, even for a request that will be refused. Answering early and closing resets the connection
+        # on Windows, and the client loses the answer.
+        try:
+            length = int(self.headers.get("Content-Length", 0))
+        except ValueError:
+            length = None
+        body = self.rfile.read(min(length or 0, MAX_READ))
         if not self._host_allowed():
             return self._json(403, {"error": "Unexpected Host header."})
+        if not self._authorized():
+            return self._deny()
         path = self.path.split("?", 1)[0]
         if path not in ("/api/gemini", "/api/ask"):
             return self._json(404, {"error": "Not found"})
         # Only application/json: a page on another site cannot send it without a CORS preflight, which is not answered.
         if not (self.headers.get("Content-Type") or "").lower().startswith("application/json"):
             return self._json(415, {"error": "Content-Type must be application/json."})
-        try:
-            length = int(self.headers.get("Content-Length", 0))
-        except ValueError:
+        if length is None:
             return self._json(400, {"error": "Bad Content-Length."})
         if length > MAX_BODY:
             return self._json(413, {"error": "The request is too large."})
         if path == "/api/ask":
             try:
-                return self._json(200, answer_question(json.loads(self.rfile.read(length) or b"null")))
+                return self._json(200, answer_question(json.loads(body or b"null")))
             except (ValueError, BadRequest) as exc:
                 return self._json(400, {"error": str(exc) if isinstance(exc, BadRequest) else "The request is not valid JSON."})
         try:
-            system, contents, declarations = validate(json.loads(self.rfile.read(length) or b"null"))
+            system, contents, declarations = validate(json.loads(body or b"null"))
         except (ValueError, BadRequest) as exc:
             return self._json(400, {"error": str(exc) if isinstance(exc, BadRequest) else "The request is not valid JSON."})
         try:
@@ -199,6 +237,8 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1", help="use 0.0.0.0 only on a network you trust")
     parser.add_argument("--port", type=int, default=8765)
     args = parser.parse_args()
+    if args.host not in ("127.0.0.1", "localhost", "::1") and not os.environ.get("APP_PASSWORD"):
+        raise SystemExit("Set APP_PASSWORD before running on a public host, so only people with it can use your Gemini key.")
     try:
         server = make_server(args.host, args.port)
     except OSError:
@@ -206,6 +246,7 @@ def main() -> None:
                          f"with --port {args.port + 1}.") from None
     print(f"KAM portal: http://{args.host}:{args.port}")
     print(f"Gemini assistant: {'ON (' + llm.MODEL + ')' if llm.api_key() else 'OFF, set GEMINI_API_KEY to enable it'}")
+    print(f"Password: {'ON' if os.environ.get('APP_PASSWORD') else 'off'}", flush=True)
     threading.Thread(target=workbook, daemon=True).start()  # so the first question does not wait for the workbook
     try:
         server.serve_forever()

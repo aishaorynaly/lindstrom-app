@@ -1,0 +1,16 @@
+# Render reads this when the service is created as a Blueprint. Keys are entered in Render, never here.
+services:
+  - type: web
+    name: lindstrom-app
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python server.py --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: APP_PASSWORD
+        sync: false
+      - key: PYTHON_VERSION
+        value: 3.13.9
