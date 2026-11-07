@@ -1,5 +1,7 @@
 # Lindström Customer Review & Value Generator
 
+**Live app:** [lindstrom-app.onrender.com](https://lindstrom-app.onrender.com/) (ask the owner for the password)
+
 A decision-support tool for Key Account Managers (KAMs): a multi-site value dashboard, an AI assistant on the right, and an editable PowerPoint for steering meetings. It is **not** audited compliance or CSRD reporting, and all data in `data.xlsx` is synthetic.
 
 There are two interfaces on the same data:
