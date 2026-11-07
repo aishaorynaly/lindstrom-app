@@ -17,7 +17,7 @@ except ImportError:  # the app still runs, with rule-based text only
     genai = errors = types = None
 
 # GEMINI_MODEL picks a model by hand. Otherwise a model that has been retired is replaced, see _replacement.
-MODEL = os.environ.get("GEMINI_MODEL") or "gemini-2.5-flash"
+MODEL = os.environ.get("GEMINI_MODEL") or "gemini-3.8-flash"
 TIMEOUT_MS = 90_000
 # Gemini 2.5 counts its internal thinking against this limit, so keep it generous.
 MAX_OUTPUT_TOKENS = 8192

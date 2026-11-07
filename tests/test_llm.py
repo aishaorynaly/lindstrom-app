@@ -18,7 +18,7 @@ def test_request_shape(fake_gemini):
     text = llm.generate("You are a test.", MESSAGES)
 
     assert text == "Water saved is 1.41 million L [Estimated]."
-    assert fake_gemini.last["path"] == "/v1beta/models/gemini-2.5-flash:generateContent"
+    assert fake_gemini.last["path"] == "/v1beta/models/gemini-3.8-flash:generateContent"
     assert fake_gemini.last["headers"]["x-goog-api-key"] == "test-key"
     assert fake_gemini.system == "You are a test."
     assert fake_gemini.roles == ["user", "model", "user"]

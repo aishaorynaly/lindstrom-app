@@ -61,7 +61,7 @@ def test_chat_answer_sends_rules_data_and_history(ctx, fake_gemini):
 
     assert answer.text.startswith("Water saved") and answer.untraced == []
     assert answer.source.startswith(llm.MODEL)
-    assert "gemini-2.5-flash:generateContent" in fake_gemini.last["path"]
+    assert "gemini-3.8-flash:generateContent" in fake_gemini.last["path"]
     assert config.GAP_FRAMING in fake_gemini.system and "<dashboard_data>" in fake_gemini.system
     assert config.GAP_METRIC in fake_gemini.system and "[TEAM_ASSUMPTION]" in fake_gemini.system
     assert fake_gemini.roles == ["user", "model", "user"]

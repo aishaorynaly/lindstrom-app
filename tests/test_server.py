@@ -63,7 +63,7 @@ def test_nothing_outside_the_allow_list_is_served(portal, path):
 
 def test_health_reports_the_key_without_revealing_it(portal, monkeypatch):
     monkeypatch.delenv("GEMINI_API_KEY", raising=False)
-    assert json.loads(request(portal + "/api/health")[1]) == {"ai": False, "model": "gemini-2.5-flash"}
+    assert json.loads(request(portal + "/api/health")[1]) == {"ai": False, "model": "gemini-3.8-flash"}
     monkeypatch.setenv("GEMINI_API_KEY", "secret-key-value")
     status, body, _ = request(portal + "/api/health")
     assert json.loads(body)["ai"] is True and b"secret-key-value" not in body
@@ -80,7 +80,7 @@ def test_proxy_returns_the_models_text(portal, fake_gemini):
     status, body = post(portal, {"system": "You are a test.", "contents": CONTENTS, "tools": TOOLS})
     assert status == 200 and body["parts"] == [{"text": "Water saved is 1.41 M L [Estimated]."}]
     sent = fake_gemini.last["body"]
-    assert fake_gemini.last["path"] == "/v1beta/models/gemini-2.5-flash:generateContent"
+    assert fake_gemini.last["path"] == "/v1beta/models/gemini-3.8-flash:generateContent"
     assert fake_gemini.last["headers"]["x-goog-api-key"] == "test-key"
     assert sent["systemInstruction"]["parts"][0]["text"] == "You are a test."
     declared = sent["tools"][0]["functionDeclarations"][0]

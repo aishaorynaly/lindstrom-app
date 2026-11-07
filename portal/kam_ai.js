@@ -11,7 +11,7 @@
 "use strict";
 const KAM = window.KAM, KI = KAM.KI, KIND = KAM.KIND, AREAS = KAM.AREAS;
 const plain = h => String(h).replace(/<[^>]+>/g, "");
-const AI = KAM.AI = {on: false, model: "gemini-2.5-flash", reason: "checking"};
+const AI = KAM.AI = {on: false, model: "gemini-3.8-flash", reason: "checking"};
 
 /* ---------------------------------------------------------------- small UI helpers */
 KAM.thinking = on => {

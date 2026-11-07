@@ -169,8 +169,8 @@ def test_gemini_grounded_draft_is_used(ctx, fake_gemini):
     fact = ctx.metrics["water_saved"].text
     fake_gemini.reply(DRAFT % ("Water", f"Saved {fact} [Estimated]"))
     points, source = narrative.ai_discussion_points(ctx, 1)
-    assert source.startswith("AI-generated (gemini-2.5-flash)") and points[0].title == "Water"
-    assert "gemini-2.5-flash:generateContent" in fake_gemini.last["path"]
+    assert source.startswith("AI-generated (gemini-3.8-flash)") and points[0].title == "Water"
+    assert "gemini-3.8-flash:generateContent" in fake_gemini.last["path"]
     config_sent = fake_gemini.last["body"]["generationConfig"]
     assert config_sent["responseMimeType"] == "application/json"
     assert config.GAP_FRAMING in fake_gemini.system

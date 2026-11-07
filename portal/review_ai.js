@@ -7,7 +7,7 @@
    ====================================================================== */
 (function () {
 "use strict";
-const AI = {on: false, model: "gemini-2.5-flash", reason: "checking"};
+const AI = {on: false, model: "gemini-3.8-flash", reason: "checking"};
 const NAVY = "#00205b", ORANGE = "#d9701c", GREY = "#cbd5e1";
 const NO_SCAN = "Allocated garments with no scan activity";
 const WHATIF = {scale: 1, rate: 1, pct: 0};

@@ -267,7 +267,7 @@ def test_gemini_changes_the_view_and_answers_from_tool_results(online, page):
     fake.call_tool("get_metric", {"metric": "energy_saving", "months_from": 12, "months_to": 12})
     fake.reply(f"Last month you saved {energy:,.0f} kWh [Estimated] against local laundry.")
     open_account(page, server)
-    assert "gemini-2.5-flash" in page.locator("#insEngine").inner_text()
+    assert "gemini-3.8-flash" in page.locator("#insEngine").inner_text()
     say(page, "How much kWh did we save last month?")
     reply = page.locator("#imsgs .m.ai").last
     reply.wait_for(timeout=20000)
