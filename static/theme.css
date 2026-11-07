@@ -1,0 +1,116 @@
+/* Lindström KAM theme. Colours live in :root; Streamlit's own theme is in .streamlit/config.toml. */
+:root {
+  --navy: #00205b; --navy-deep: #0a1b3d; --ink: #0a1b3d; --ink-2: #475569; --ink-3: #64748b;
+  --line: #e2e8f0; --bg: #f4f6f8; --card: #ffffff; --r: 14px;
+  --shadow: 0 1px 2px rgba(10, 27, 61, .04), 0 4px 16px -8px rgba(10, 27, 61, .10);
+  --ok: #15803d; --watch: #b45309; --high: #b91c1c;
+}
+
+/* --- Chrome ------------------------------------------------------------------ */
+[data-testid="stHeader"] { background: transparent; }
+[data-testid="stMainBlockContainer"] { padding: 1.75rem 2rem 3rem; max-width: 1480px; }
+h1, h2, h3 { letter-spacing: -.02em; color: var(--ink); }
+[data-testid="stHeaderActionElements"] { display: none; }
+[data-testid="stSidebar"] { background: var(--card); border-right: 1px solid var(--line); }
+[data-testid="stSidebarHeader"] { height: 2.25rem; padding: .5rem 1rem 0; }
+[data-testid="stSidebarUserContent"] { padding-top: .25rem; }
+
+.brand { display: flex; align-items: center; gap: 10px; font-size: 1.25rem; font-weight: 700; color: var(--navy); margin-bottom: 1rem; }
+.brand img { width: 32px; height: 32px; }
+.nav-label { font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin: .25rem 0; }
+.client-name { font-weight: 600; color: var(--ink); }
+.fine { font-size: .72rem; line-height: 1.4; color: var(--ink-3); margin-top: .75rem; }
+
+/* --- Buttons: pills, as in the template --------------------------------------- */
+.stButton button, .stDownloadButton button {
+  border-radius: 999px; font-weight: 600; font-size: .85rem; min-height: 2.35rem;
+  border: 1.5px solid var(--navy); color: var(--navy); background: var(--card); transition: background .15s;
+}
+.stButton button p, .stDownloadButton button p { font-size: .85rem; font-weight: 600; }
+.stButton button:hover, .stDownloadButton button:hover { background: #eef2f9; color: var(--navy); border-color: var(--navy); }
+.stButton button[kind="primary"], .stDownloadButton button[kind="primary"] { background: var(--navy); color: #fff; }
+.stButton button[kind="primary"]:hover, .stDownloadButton button[kind="primary"]:hover { background: var(--navy-deep); color: #fff; }
+
+/* --- Page head ---------------------------------------------------------------- */
+.phead h1 { font-size: 2.3rem; font-weight: 700; line-height: 1.15; margin: 0; padding: 0; }
+.pmeta { color: var(--ink-3); font-size: .95rem; margin-top: .35rem; }
+.status { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; font-size: .8rem; color: var(--ink-2); margin: .1rem 0 .4rem; }
+.status b { color: var(--navy); font-weight: 600; }
+.status .detail { color: var(--ink-3); }
+.status .aside { flex-basis: 100%; color: var(--ink-3); }
+.status-ai b, .status-manual b { color: var(--watch); }
+
+/* --- KPI cards ----------------------------------------------------------------- */
+[class*="st-key-kpi_"] {
+  position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--r);
+  box-shadow: var(--shadow); padding: 18px 16px 14px; height: 100%; min-height: 216px; gap: 0;
+}
+[data-testid="stLayoutWrapper"]:has(> [class*="st-key-kpi_"]) { height: 100%; }
+.kpi-label { font-size: .84rem; font-weight: 600; color: var(--ink-2); padding-right: 36px; min-height: 3.9em; line-height: 1.3; }
+.kpi-value { font-size: 1.6rem; font-weight: 700; letter-spacing: -.02em; color: var(--ink); line-height: 1.15; margin: .4rem 0 .55rem; min-height: 2.3em; }
+[class*="st-key-kpi_"] [class*="st-key-open_"] { position: absolute; top: 12px; right: 12px; width: auto !important; }
+[class*="st-key-kpi_"] [class*="st-key-open_"] button { width: 32px; height: 32px; min-height: 32px; padding: 0; }
+.st-key-kpi_hero { background: linear-gradient(140deg, var(--navy) 0%, var(--navy-deep) 90%); border-color: var(--navy-deep); }
+.st-key-kpi_hero .kpi-label { color: #dbe4f3; }
+.st-key-kpi_hero .kpi-value { color: #fff; }
+.st-key-kpi_hero [class*="st-key-open_"] button { background: #fff; border-color: #fff; }
+
+/* --- Provenance tags ------------------------------------------------------------ */
+.tag { display: inline-block; white-space: nowrap; font-size: .66rem; font-weight: 600; padding: 1px 7px; border-radius: 999px; margin: 0 4px 2px 0; }
+.tag-Measured { background: #dcfce7; color: #14532d; }
+.tag-Calculated { background: #e0e7ff; color: #1e3a8a; }
+.tag-Estimated { background: #fef3c7; color: #78350f; }
+.tag-TEAM_ASSUMPTION { background: #ede9fe; color: #4c1d95; }
+
+/* --- Accordions and detail tiles --------------------------------------------------- */
+[data-testid="stExpander"] details { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: none; }
+[data-testid="stExpander"] summary { font-weight: 600; color: var(--ink); }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 10px; margin: 4px 0 12px; }
+.tile { background: #f8fafc; border: 1px solid var(--line); border-radius: 10px; padding: 12px 14px; }
+.tile .label { font-size: .8rem; color: var(--ink-2); font-weight: 600; min-height: 2.3em; line-height: 1.3; }
+.tile .value { font-size: 1.35rem; color: var(--ink); font-weight: 700; margin: 2px 0 6px; }
+.tile .note { font-size: .74rem; color: var(--ink-3); margin-top: 6px; line-height: 1.35; }
+.caution { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; border-radius: 10px; padding: 10px 14px; font-size: .84rem; margin: 6px 0 12px; line-height: 1.4; }
+.legend-row { font-size: .84rem; color: var(--ink-2); margin-bottom: .35rem; }
+
+/* --- Focus view ---------------------------------------------------------------------- */
+[class*="st-key-card_"] { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px 18px 18px; }
+[data-testid="stLayoutWrapper"]:has(> .st-key-card_visual), [data-testid="stLayoutWrapper"]:has(> .st-key-card_indicators) { height: 100%; }
+.st-key-card_visual, .st-key-card_indicators { height: 100%; }
+.focus-head h1 { font-size: 2rem; font-weight: 700; margin: .35rem 0 0; padding: 0; line-height: 1.2; }
+.focus-head .ask { color: var(--ink-3); font-size: .86rem; margin-top: .55rem; }
+.focus-head .lead { color: var(--ink-2); font-size: 1rem; margin: .35rem 0 .3rem; line-height: 1.45; }
+.st-key-card_insights li { font-size: .92rem; }
+.card-title { font-size: .95rem; font-weight: 600; color: var(--ink); margin-bottom: .5rem; }
+.inds { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; margin-bottom: 1rem; }
+.ind { border: 1px solid var(--line); border-radius: 10px; padding: 11px 13px; background: #f8fafc; }
+.ind .label { font-size: .78rem; font-weight: 600; color: var(--ink-2); line-height: 1.3; min-height: 2.6em; }
+.ind .value { font-size: 1.3rem; font-weight: 700; color: var(--ink); margin: 2px 0 4px; }
+.ind .note { font-size: .72rem; color: var(--ink-3); line-height: 1.35; margin-top: 3px; }
+.level { display: inline-block; font-size: .66rem; font-weight: 700; margin-right: 6px; }
+.level-ok { color: var(--ok); } .level-watch { color: var(--watch); } .level-high { color: var(--high); }
+
+/* --- Insights rail ---------------------------------------------------------------------- */
+.st-key-rail { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); box-shadow: var(--shadow); padding: 16px; position: sticky; top: 1rem; }
+.rail-head b { display: block; font-size: 1rem; color: var(--ink); }
+.rail-head span { display: block; font-size: .76rem; color: var(--ink-3); margin-bottom: .35rem; }
+.st-key-rail .stButton button { width: 100%; border-width: 1px; border-color: var(--line); border-radius: 12px; color: var(--ink-2); font-weight: 500; font-size: .8rem; justify-content: flex-start; height: auto; padding: .45rem .75rem; }
+.st-key-rail .stButton button p { text-align: left; font-size: .8rem; font-weight: 500; }
+.st-key-rail .stButton button:hover { border-color: var(--navy); color: var(--navy); }
+.st-key-rail [data-testid="stChatMessage"] { padding: .35rem 0; background: transparent; }
+.st-key-rail [data-testid="stChatMessage"] p, .st-key-rail [data-testid="stChatMessage"] li { font-size: .82rem; line-height: 1.45; }
+.st-key-rail [data-testid="stChatInput"] { border-radius: 14px; }
+
+/* --- Login ---------------------------------------------------------------------------------- */
+.st-key-login_card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); padding: 34px 30px 26px; margin-top: 11vh; text-align: center; }
+.st-key-login_card img.lg { width: 60px; height: 60px; margin: 0 auto; display: block; }
+.st-key-login_card h1 { font-size: 2.1rem; font-weight: 700; padding: .35rem 0 0; }
+.st-key-login_card [data-testid="stSelectbox"] { text-align: left; }
+.st-key-login_card .stButton button { width: 100%; min-height: 2.75rem; }
+.fine-box { font-size: .74rem; line-height: 1.4; color: var(--ink-3); margin-top: .35rem; }
+
+@media (max-width: 900px) {
+  [data-testid="stMainBlockContainer"] { padding: 2.75rem 16px 2rem; }
+  .phead h1, .focus-head h1 { font-size: 1.7rem; }
+  .st-key-rail { position: static; }
+}

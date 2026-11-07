@@ -1,0 +1,74 @@
+/* Client adjustments on top of the review design: palette, borders, details accordion, focused view.
+   The layout itself stays in review.html. */
+:root {
+  --g9: #0a1b3d; --g8: #00205b; --g7: #00205b; --g6: #1d4a8f; --g3: #9fb3d4; --g1: #e8eef7;
+  --navy: #00205b; --acc: #00205b; --acc-bg: rgba(0, 32, 91, .08);
+  --panel: #f4f6f8; --page: #f4f6f8; --hair: #e2e8f0; --line: #e2e8f0;
+  --ink: #0a1b3d;
+  --lift: 0 1px 2px rgba(10, 27, 61, .04), 0 4px 16px -8px rgba(10, 27, 61, .10);
+}
+body { font-family: "Inter", -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #eef1f5; color: var(--ink); }
+.card, .kpi:not(.hero), .acard2 { box-shadow: var(--lift); border: 1px solid #e2e8f0; }
+.kpi.hero { background: linear-gradient(140deg, #00205b, #0a1b3d 75%); }
+
+/* Progressive disclosure: the KPI cards show first, everything else opens with one click. */
+#ovMore { margin-top: 18px; }
+#ovMore > summary {
+  list-style: none; cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 14px 20px; background: #fff;
+  border: 1px solid #e2e8f0; border-radius: var(--r); font-weight: 600; color: #00205b; box-shadow: var(--lift);
+}
+#ovMore > summary::-webkit-details-marker { display: none; }
+#ovMore > summary::before { content: "›"; font-size: 20px; line-height: 1; transition: transform .15s; }
+#ovMore[open] > summary { margin-bottom: 18px; }
+#ovMore[open] > summary::before { transform: rotate(90deg); }
+
+/* Focused view: same page, overview hidden. */
+body.focusing #dash > .phead, body.focusing #dash > .toolrow, body.focusing #dash > .previewbar,
+body.focusing #overview, body.focusing #analysis { display: none !important; }
+#focusView { display: flex; flex-direction: column; gap: 16px; }
+#focusView.hidden { display: none; }
+#focusBack { align-self: flex-start; height: 42px; font-size: 14px; }
+#focusView .fhead h1 { margin: 0; font-size: 34px; letter-spacing: -.02em; color: #0a1b3d; }
+#focusView .fask { color: #64748b; font-size: 13.5px; margin-top: 8px; }
+#focusView .flead { color: #475569; font-size: 15.5px; margin-top: 4px; }
+#focusView .fnote { background: #fffbeb; border: 1px solid #fde68a; color: #78350f; border-radius: 12px; padding: 10px 14px; font-size: 13px; line-height: 1.45; }
+#focusView .card { margin: 0; padding: 20px 22px; }
+#focusView .card h3 { margin: 0 0 12px; font-size: 15px; color: #0a1b3d; }
+#focusView .fgrid { display: grid; grid-template-columns: minmax(240px, 1fr) minmax(0, 1.7fr); gap: 16px; }
+#focusView .inds { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+#focusView .ind { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 14px; }
+#focusView .ind .l { font-size: 12.5px; font-weight: 600; color: #475569; }
+#focusView .ind .v { font-size: 22px; font-weight: 700; color: #0a1b3d; margin: 4px 0; letter-spacing: -.01em; }
+#focusView .ind .n { font-size: 11.5px; color: #64748b; line-height: 1.35; margin-top: 4px; }
+#focusView .lvl { font-size: 11px; font-weight: 700; margin-right: 6px; }
+#focusView .lvl.ok { color: #15803d; } #focusView .lvl.watch { color: #b45309; } #focusView .lvl.high { color: #b91c1c; }
+#focusView .fins ul { margin: 0; padding-left: 20px; display: grid; gap: 8px; font-size: 14.5px; line-height: 1.5; }
+#focusView .fsrc { font-size: 12px; color: #64748b; margin-top: 10px; }
+#focusView .dn { display: grid; justify-items: center; gap: 10px; }
+#focusView .dn .leg { display: grid; gap: 4px; font-size: 12.5px; color: #475569; width: 100%; }
+#focusView .dn .leg i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 8px; }
+#focusView .dn .leg b { float: right; font-weight: 600; color: #0a1b3d; }
+#focusView .br { display: grid; grid-template-columns: minmax(90px, 170px) 1fr minmax(70px, max-content); gap: 10px; align-items: center; font-size: 13px; color: #475569; padding: 3px 0; }
+#focusView .br .t { background: #f1f5f9; border-radius: 6px; height: 22px; position: relative; }
+#focusView .br .t i { display: block; height: 100%; border-radius: 6px; background: #00205b; }
+#focusView .br .t i.w { background: #d9701c; }
+#focusView .br > b { white-space: nowrap; font-size: 12.5px; font-weight: 600; color: #0a1b3d; text-align: right; }
+#focusView .fgrid.dash { grid-template-columns: 1fr; }
+#focusView .dash .fkpis { order: -1; }
+#focusView .dash .inds { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+#focusView .dash .dn { max-width: 420px; margin: 0 auto; }
+#focusView .fanswer { border: 1.5px solid #00205b; }
+#focusView .fanswer p { margin: 0 0 8px; font-size: 16px; line-height: 1.5; color: #0a1b3d; }
+#focusView .fanswer ul { margin: 0 0 8px; padding-left: 20px; font-size: 14.5px; line-height: 1.5; }
+#focusView .fwarn { font-size: 12.5px; color: #92400e; margin-top: 8px; }
+#focusView details.fq { font-size: 12px; color: #64748b; margin-top: 8px; }
+#focusView .fctl { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
+#focusView .fctl label { display: grid; gap: 4px; font-size: 12.5px; font-weight: 600; color: #475569; }
+#focusView .fctl input { height: 40px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 12px; font: inherit; color: #0a1b3d; background: #fff; }
+#focusView .fctl select { height: 40px; border: 1px solid #e2e8f0; border-radius: 10px; padding: 0 10px; font: inherit; color: #0a1b3d; background: #fff; }
+#focusView .fctl input[type=range] { height: 24px; padding: 0; accent-color: #00205b; border: 0; }
+#focusView .fctl output { font-weight: 700; color: #0a1b3d; }
+#iTyping { display: none; padding: 6px 14px; font-size: 12.5px; color: #64748b; }
+#iTyping.on { display: block; }
+.ai-src { font-size: 11.5px; color: #64748b; margin-top: 6px; }
+@media (max-width: 900px) { #focusView .fgrid { grid-template-columns: 1fr; } #focusView .fhead h1 { font-size: 27px; } }

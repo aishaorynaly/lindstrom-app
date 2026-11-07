@@ -1,0 +1,19 @@
+# Secrets: never commit an API key
+.env
+.env.*
+*.key
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Local tools
+.claude/
+
+# Challenge documents from the partner, not needed to run the app
+*.docx
+Lindstr*Hackathon*.pptx
+Since AI Hackathon*.pptx
+Lindstrom_SinceAI_Customer_Value_Synthetic_Data_Pack.xlsx
